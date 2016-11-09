@@ -1,0 +1,103 @@
+/* ======================================= */
+/* Stylesheet file for the annotation page */
+/* ======================================= */
+
+/* Annotation Field */
+div#anno-field {
+	padding-top: 60px;
+}
+
+ul#doc-list {
+	list-style: none;
+	padding: 0 50px;
+}
+
+li.doc-item {
+	border: 1px solid #eee;
+	border-radius: 2px;
+	padding: 8px;
+	margin-bottom: 10px;
+
+	background-color: #fafafa;
+}
+
+div.doc-body {
+	font-size: 14px;
+	line-height: 18px;
+
+	color: #292f33;
+}
+
+div.doc-anno {
+	margin-top: 5px;
+}
+
+span.doc-anno-btn {
+	display: inline-block;
+	position: relative;
+
+	/*float: left;*/
+	border: 1px solid #d5d5d5;
+	/*border-right-width: 0;*/
+	border-radius: 0;
+	margin-left: -1px;
+	padding: 3px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 20px;
+
+	color: #333;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+
+	background-color: #eee;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+span.doc-anno-btn:first-child {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+span.doc-anno-btn:last-child {
+	border-right-width: 1px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+span.doc-anno-btn:hover, span.doc-anno-btn:active {
+	z-index: 2;
+}
+
+span.doc-anno-btn:hover {
+	background-color: #ddd;
+	background-image: -webkit-linear-gradient(#eee, #ddd);
+	background-image: linear-gradient(#eee, #ddd);
+	border-color: #ccc;
+}
+
+span.doc-anno-btn:active {
+	background-color: #dcdcdc;
+	background-image: none;
+	border-color: #b5b5b5;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+span.doc-anno-btn:focus {
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.5);
+}
+
+span.doc-anno-btn[labeled='true'] {
+	z-index: 3;
+	color: #2480e2;
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
+}
+

@@ -1,0 +1,39 @@
+/* =================================== */
+/* Stylesheet file loaded by all pages */
+/* =================================== */
+* {
+    box-sizing: border-box;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+     -khtml-user-select: none; /* Konqueror */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Banner */
+div#banner {
+	position: fixed;
+	top: 0;
+	height: 60px;
+	width: 100%;
+	background-color: #eee;
+}
+
+div#banner-title {
+	padding-left: 20px;
+	height: 60px;
+	line-height: 60px;
+	font-family: 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: 100;
+	color: #888;
+}
