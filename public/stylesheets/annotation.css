@@ -4,24 +4,43 @@
 
 /* Annotation Field */
 div#anno-field {
+	min-width: 800px;
 	padding-top: 60px;
 }
 
 ul#doc-list {
 	list-style: none;
 	padding: 0 50px;
+	padding-bottom: 100px;
 }
 
 li.doc-item {
 	border: 1px solid #eee;
-	border-radius: 2px;
-	padding: 8px;
+	border-radius: 3px;
+	padding: 10px 15px;
 	margin-bottom: 10px;
 
 	background-color: #fafafa;
+	opacity: .7;
+	transition: opacity .1s ease-in-out;
 }
 
+li.doc-item:hover {
+	opacity: 1;
+	border-color: #34a7fe;
+}
+
+div.doc-meta {
+	font-size: 11px;
+	color: #bbb;
+}
+
+/*li.doc-item:hover > div.doc-meta {
+	color: #a9a9a9;
+}*/
+
 div.doc-body {
+	margin: 12px 0;
 	font-size: 14px;
 	line-height: 18px;
 
@@ -101,3 +120,82 @@ span.doc-anno-btn[labeled='true'] {
 	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
 }
 
+p#anno-end {
+	font-size: 13px;
+	font-style: italic;
+	text-align: center;
+	color: #bbb;
+}
+
+div#anno-operation {
+	z-index: 99;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	border-top: 1px solid #ddd;
+	height: 80px;
+	width: 100%;
+	min-width: 800px;
+	background: #fff;
+	box-shadow: 0 0 10px rgba(0,0,0,.1);
+}
+
+div#anno-info {
+	position: absolute;
+	left: 0;
+	padding: 20px;
+}
+
+div.anno-info-item {
+	font-size: 14px;
+	/*font-weight: 300;*/
+	color: #888;
+}
+
+span.anno-info-item-key {
+	color: #0080ff;
+	margin-right: 10px;
+}
+
+button#next, button#return {
+	display: block;
+	border: 0;
+	border-radius: 4px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+	outline: none;
+
+	height: 50px;
+	width: 120px;
+
+	font-size: 18px;
+	font-weight: 300;
+
+	cursor: pointer;
+}
+
+button#next {
+	position: relative;
+
+	color: #fff;
+	background-color: #0080ff;
+}
+
+button#return {
+	position: absolute;
+	right: 10px;
+	top: 0;
+	width: 80px;
+	color: #888;
+	background-color: #eee;
+}
+
+button#return:hover {
+	color: #666;
+	background-color: #e5e5e5;
+}
+
+button#next:hover {
+	background-color: #0087ff;
+}

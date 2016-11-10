@@ -19,8 +19,11 @@ body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+
+
 /* Banner */
 div#banner {
+	z-index: 99;
 	position: fixed;
 	top: 0;
 	height: 60px;
@@ -34,6 +37,6 @@ div#banner-title {
 	line-height: 60px;
 	font-family: 'Helvetica Neue', Helvetica, sans-serif;
 	font-size: 18px;
-	font-weight: 100;
-	color: #888;
+	font-weight: 300;
+	color: #0080ff;
 }
