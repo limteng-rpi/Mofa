@@ -2,6 +2,8 @@
  * Communication with the server and data processing 
  * ================================================= */
 var fileAnnotation = {};
+var annotator;
+var file;
 
 // reset the current annotation field
 function resetAnnotationField() {
@@ -97,7 +99,16 @@ function annotationButtonHandler() {
 	});
 }
 
+function sendAnnotation() {
+	var submit = {annotator: annotator, annotation: fileAnnotation, file: file};
+	$.post('/submit', submit).done(function() {
+
+	});
+}
+
 $(document).ready(function() {
+	file = $('#anno-field').attr('file');
+	annotator = $('#anno-field').attr('annotator');
 	// resetAnnotationField()
 	// generateAnnotationField();
 	resetAnnotationField();
