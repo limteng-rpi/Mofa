@@ -6,7 +6,7 @@ block bodyextra
 	#anno-field
 		ul#doc-list
 			- each doc in docs
-				li.doc-item
+				li.doc-item(id='#{doc.id}')
 					.doc-meta #{doc.id} | #{doc.postedTime}
 					.doc-body= doc.body
 					.doc-anno.noselect

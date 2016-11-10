@@ -1,59 +1,14 @@
 /* =================================================
  * Communication with the server and data processing 
  * ================================================= */
-var data = [
-{
-	id: "tag:search.twitter.com,2005:587103055784599554",
-	body: "RT @noellebelangerr: Long live flannel",
-	postedTime: "2015-04-07T14:54:28.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}, {
-	id: "tag:search.twitter.com,2005:587103055822192641",
-	body: "Realizing that you have a girl that you've been searching for is one of the best feelings.",
-	postedTime: "2011-11-04T04:02:27.000Z"
-}
-
-];
+var fileAnnotation = {};
 
 // reset the current annotation field
 function resetAnnotationField() {
-	var docList = $('ul#doc-list');
-	docList.empty();
+	$('li.doc-item').each(function(i, v) {
+		var id = $(v).attr('id');
+		fileAnnotation[id] = {'annotation': {'n/a': true}};
+	});
 }
 
 
@@ -125,14 +80,18 @@ function annotationButtonHandler() {
 			// the moral foundation is checked
 			if (value != 'n/a') {
 				$(this).attr('labeled', 'false');
+				fileAnnotation[id][value] = false;
 			}
 		} else {
 			// the moral foundation is not checked
 			$(this).attr('labeled', 'true');
 			if (value == 'n/a') {
 				$('span.doc-anno-btn[value!="n/a"][id="' + id +'"]').attr('labeled', false);
+				fileAnnotation[id][value] = true;
 			} else {
 				$('span.doc-anno-btn[value="n/a"][id="' + id + '"]').attr('labeled', false);
+				fileAnnotation[id][value] = true;
+				fileAnnotation[id]['n/a'] = false;
 			}
 		}
 	});
@@ -141,6 +100,7 @@ function annotationButtonHandler() {
 $(document).ready(function() {
 	// resetAnnotationField()
 	// generateAnnotationField();
+	resetAnnotationField();
 	annotationButtonHandler();
 	returnButtonHandler();
 	highlight();
