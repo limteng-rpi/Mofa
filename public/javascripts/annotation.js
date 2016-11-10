@@ -96,21 +96,52 @@ function generateAnnotationBar(id) {
 	return annoBar;
 }
 
+
+function highlight() {
+	// highlight username
+	$('.doc-body').each(function(i, v) {
+		var text = $(v).text();
+		text = text.replace(/(@([\w\d]+))/g, '<span class="doc-body-user"><a href="https://twitter.com/$2" target="_blank">$1</a></span>');
+		text = text.replace(/(#([\w\d]+))/g, '<span class="doc-body-hashtag"><a href="https://twitter.com/hashtag/$2" target="_blank">$1</a></span>');
+		text = text.replace(/((https?:\/\/(bit\.ly|t\.co|lnkd\.in|tcrn\.ch)\S*)\b)/g, '<span class="doc-body-url"><a href="$1" target="_blank">$1</a></span>');
+		$(v).html(text);
+	});
+}
+
+function returnButtonHandler() {
+	$('button#return').click(function() {
+		if (confirm('Return to the file list without saving the current annotations?\n(To save before leaving, click the "Next Batch" button first.)')) {
+			window.location.href = "/?annotator=" + $(this).attr('annotator');
+		}
+	});
+}
+
 function annotationButtonHandler() {
 	$('span.doc-anno-btn').click(function() {
 		var labeled = $(this).attr('labeled');
+		var value = $(this).attr('value');
+		var id = $(this).attr('id');
 		if (labeled == 'true') {
 			// the moral foundation is checked
-			$(this).attr('labeled', 'false');
+			if (value != 'n/a') {
+				$(this).attr('labeled', 'false');
+			}
 		} else {
 			// the moral foundation is not checked
 			$(this).attr('labeled', 'true');
+			if (value == 'n/a') {
+				$('span.doc-anno-btn[value!="n/a"][id="' + id +'"]').attr('labeled', false);
+			} else {
+				$('span.doc-anno-btn[value="n/a"][id="' + id + '"]').attr('labeled', false);
+			}
 		}
 	});
 }
 
 $(document).ready(function() {
-	resetAnnotationField()
-	generateAnnotationField();
+	// resetAnnotationField()
+	// generateAnnotationField();
 	annotationButtonHandler();
-})
+	returnButtonHandler();
+	highlight();
+});

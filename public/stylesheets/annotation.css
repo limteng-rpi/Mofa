@@ -21,7 +21,7 @@ li.doc-item {
 	margin-bottom: 10px;
 
 	background-color: #fafafa;
-	opacity: .7;
+	opacity: .9;
 	transition: opacity .1s ease-in-out;
 }
 
@@ -42,9 +42,15 @@ div.doc-meta {
 div.doc-body {
 	margin: 12px 0;
 	font-size: 14px;
-	line-height: 18px;
+	line-height: 20px;
 
 	color: #292f33;
+}
+
+span.doc-body-user,
+span.doc-body-hashtag,
+span.doc-body-url {
+	color: #0084B4;
 }
 
 div.doc-anno {

@@ -5,13 +5,30 @@ block headextra
 block bodyextra
 	#anno-field
 		ul#doc-list
+			- each doc in docs
+				li.doc-item
+					.doc-meta #{doc.id} | #{doc.postedTime}
+					.doc-body= doc.body
+					.doc-anno.noselect
+						span.doc-anno-btn.na(value='n/a', id='#{doc.id}', labeled='true') N/A
+						span.doc-anno-btn(value='care', id='#{doc.id}') care
+						span.doc-anno-btn(value='harm', id='#{doc.id}') harm
+						span.doc-anno-btn(value='fairness', id='#{doc.id}') fairness
+						span.doc-anno-btn(value='cheating', id='#{doc.id}') cheating
+						span.doc-anno-btn(value='loyalty', id='#{doc.id}') loyalty
+						span.doc-anno-btn(value='betrayal', id='#{doc.id}') betrayal
+						span.doc-anno-btn(value='authority', id='#{doc.id}') authority
+						span.doc-anno-btn(value='subversion', id='#{doc.id}') subversion
+						span.doc-anno-btn(value='purity', id='#{doc.id}') purity
+						span.doc-anno-btn(value='degradation', id='#{doc.id}') degradation
+			p#anno-end = End of this batch =
 		#anno-operation
 			#anno-info
 				.anno-info-item
 					span.anno-info-item-key Annotator:
-					span.anno-info-item-value Ying Lin
+					span.anno-info-item-value= annotator
 				.anno-info-item
 					span.anno-info-item-key Source:
-					span.anno-info-item-value 2015_04_12_04_00.json
+					span.anno-info-item-value= file
 			button#next(type='button') Next Batch
-			button#return(type='button') return
+			button#return(type='button', annotator='#{annotator}') Return
