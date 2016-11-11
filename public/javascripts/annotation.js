@@ -9,7 +9,7 @@ var file;
 function resetAnnotationField() {
 	$('li.doc-item').each(function(i, v) {
 		var id = $(v).attr('id');
-		fileAnnotation[id] = {'annotation': {'n/a': true}};
+		fileAnnotation[id] = {annotation: {na: true}};
 	});
 }
 
@@ -68,7 +68,7 @@ function highlight() {
 function returnButtonHandler() {
 	$('button#return').click(function() {
 		if (confirm('Return to the file list without saving the current annotations?\n(To save before leaving, click the "Next Batch" button first.)')) {
-			window.location.href = "/?annotator=" + $(this).attr('annotator');
+			window.location.href = "/?annotator=" + annotator;
 		}
 	});
 }
@@ -80,29 +80,58 @@ function annotationButtonHandler() {
 		var id = $(this).attr('id');
 		if (labeled == 'true') {
 			// the moral foundation is checked
-			if (value != 'n/a') {
+			if (value != 'na') {
 				$(this).attr('labeled', 'false');
-				fileAnnotation[id][value] = false;
+				fileAnnotation[id]['annotation'][value] = false;
 			}
 		} else {
 			// the moral foundation is not checked
 			$(this).attr('labeled', 'true');
-			if (value == 'n/a') {
-				$('span.doc-anno-btn[value!="n/a"][id="' + id +'"]').attr('labeled', false);
-				fileAnnotation[id][value] = true;
+			if (value == 'na') {
+				$('span.doc-anno-btn[value!="na"][id="' + id +'"]').attr('labeled', false);
+				fileAnnotation[id]['annotation'][value] = true;
 			} else {
-				$('span.doc-anno-btn[value="n/a"][id="' + id + '"]').attr('labeled', false);
-				fileAnnotation[id][value] = true;
-				fileAnnotation[id]['n/a'] = false;
+				$('span.doc-anno-btn[value="na"][id="' + id + '"]').attr('labeled', false);
+				fileAnnotation[id]['annotation'][value] = true;
+				fileAnnotation[id]['annotation']['na'] = false;
 			}
 		}
 	});
 }
 
 function sendAnnotation() {
-	var submit = {annotator: annotator, annotation: fileAnnotation, file: file};
-	$.post('/submit', submit).done(function() {
-
+	$('button#next').click(function() {
+		var submit = {annotator: annotator, annotation: fileAnnotation, file: file};
+		console.log(submit);
+		// $.post('/submit', submit).done(function() {});
+		$.ajax({
+			url: '/submit',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(submit),
+			dataType: 'json',
+			success: function(res) {
+				if (res.error) {
+					console.log('submission error');
+				} else {
+					if (confirm('Your annotations have been submitted successfully.\nTo continue, click "yes"; otherwise, click "no" to return to the file list.')) {
+						// $('html, body').scrollTop(0);
+						// location.reload();
+						$('html, body').animate({
+							scrollTop: 0
+						}, {
+							queue: false,
+							duration: 200,
+							complete: function() {
+								location.reload();
+							}
+						});
+					} else {
+						window.location.href = "/?annotator=" + annotator;
+					}
+				}
+			}
+		});
 	});
 }
 
@@ -113,6 +142,8 @@ $(document).ready(function() {
 	// generateAnnotationField();
 	resetAnnotationField();
 	annotationButtonHandler();
+	sendAnnotation();
 	returnButtonHandler();
 	highlight();
+
 });

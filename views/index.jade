@@ -15,7 +15,7 @@ block bodyextra
 				- each file_stats in annotator_data_stats
 					tr.file-table-row
 						td #[img.file-icon(src='images/file_icon.png')]#{file_stats.name}
-						td #{file_stats.size}MB
+						td #{file_stats.size} MB
 						td #{file_stats.doc}
 						td
 							.progress-bar-wrapper

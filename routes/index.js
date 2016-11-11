@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var readlines = require('n-readlines');
+var moment = require('moment');
 
 var data_path = 'data/';
 var annotation_path = 'annotation/';
@@ -21,6 +22,8 @@ if (updateStats) {
 		else {
 			var file_stats = [];
 			for (var i = 0; i < items.length; i++) {
+				if (items[i] == '.DS_Store') continue;
+				
 				var file_obj = {};
 				var name = items[i];
 				var file_path = data_path + name;
@@ -58,14 +61,20 @@ function loadAnnotationStats() {
 		else {
 			anno_stats = {};
 			for (var i = 0; i < items.length; i++) {
+				if (items[i] == '.DS_Store') continue;
+
 				var file = annotation_path + items[i];
 				var reader = new readlines(file);
 				var line;
 				while (line = reader.next()) {
-					var segments = line.toString().split('\t');
+					var lineStr = line.toString().trim();
+					if (lineStr.length === 0) continue;
+
+					var segments = lineStr.split('\t');
 					var file = segments[0];
 					var id = segments[1];
 					var annotator = segments[2];
+					console.log(file, id, annotator);
 					if (anno_stats.hasOwnProperty(annotator)) {
 						var anno_list = anno_stats[annotator];
 						if (anno_list.hasOwnProperty(file)) {
@@ -156,10 +165,74 @@ router.get('/annotation', function(req, res, next) {
 	var file = req.query.file;
 	var annotator = req.query.annotator;
 	offer_doc(file, annotator, function(docs) {
-		console.log(docs);
+		// if (debug) console.log(docs);
 		res.render('anno', {file: file, docs: docs, annotator: annotator});
 	});
 });
 
+router.post('/submit', function(req, res, next) {
+	var datetime = moment().format('YYYYMMDD_HHmmss');
+	var file = req.body.file;
+	var annotator = req.body.annotator;
+	var annotation = req.body.annotation;
+	console.log('[' + datetime + ']Received annotations from annotator ' + annotator + ' of documents in file ' + file);
+	// write to file
+	var writer = fs.createWriteStream(annotation_path + annotator 
+		+ '_' + datetime + '.txt');
+	writer.on('error', function(err) {
+		console.log(err);
+		res.send(JSON.stringify({error: true}));
+		return;
+	});
+	var annotated_id = {};
+	for (var id in annotation) {
+		if (annotation.hasOwnProperty(id)) {
+			annotated_id[id] = true;
+			var line = file + '\t' + id + '\t' + annotator + '\t';
+			var anno = annotation[id]['annotation'];
+			// console.log(anno);
+			if (anno.hasOwnProperty('na') && anno['na'] == true) {
+				line += 'na\n';
+			} else {
+				var first = true;
+				for (var mf in anno) {
+					if (anno.hasOwnProperty(mf) && anno[mf] == true) {
+						if (first) {
+							line += mf;
+							first = false;
+						} else {
+							line += ',' + mf;
+						}
+					}
+				}
+				if (first) line += 'na\n';
+				else line += '\n';
+			}
+			writer.write(line);
+		}
+	}
+	writer.end();
+	// update anno stats
+	if (anno_stats.hasOwnProperty(annotator)) {
+		var anno_list = anno_stats[annotator];
+		if (anno_list.hasOwnProperty(file)) {
+			var file_list = anno_list[file];
+			for (var id in annotated_id) {
+				if (annotated_id.hasOwnProperty(id)) {
+					file_list[id] = true;
+				}
+			}
+		} else {
+			var file_list = annotated_id;
+			anno_list[file] = file_list;
+		}
+	} else {
+		var anno_list = {};
+		var file_list = annotated_id;
+		anno_list[file] = file_list;
+		anno_stats[annotator] = anno_list;
+	}
+	res.send(JSON.stringify({error: false}));
+});
 
 module.exports = router;
