@@ -1,0 +1,9 @@
+extends base
+block headextra
+	link(rel='stylesheet', href='stylesheets/annotation.css')
+block bodyextra
+	#anno-field
+		#msg-wrapper
+			#msg
+				#msg-text All documents in this file have been annotated.
+				a#direct-return(annotator='#{annotator}' href='/?annotator=#{annotator}') Return

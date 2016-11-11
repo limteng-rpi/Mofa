@@ -3,6 +3,7 @@ block headextra
 	link(rel='stylesheet', href='stylesheets/annotation.css')
 	script(src='javascripts/annotation.js')
 block bodyextra
+	#mask-layer
 	#anno-field(annotator='#{annotator}', file='#{file}')
 		ul#doc-list
 			- each doc in docs

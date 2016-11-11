@@ -10,7 +10,7 @@ var data_path = 'data/';
 var annotation_path = 'annotation/';
 var data_stats_file = 'data_stats.json';
 var data_stats = [];
-
+var anno_stats = {};
 
 /**
  * Update the data set stats
@@ -27,7 +27,7 @@ if (updateStats) {
 				var file_obj = {};
 				var name = items[i];
 				var file_path = data_path + name;
-				var size = ((fs.statSync(file_path)['size'] / 1000000) >> 0) / 10.0;
+				var size = ((fs.statSync(file_path)['size'] / 100000) >> 0) / 10.0;
 				var doc = count_line(file_path);
 				file_obj['name'] = name;
 				file_obj['path'] = file_path;
@@ -46,15 +46,15 @@ if (updateStats) {
  */
 function load_data_stats() {
 	fs.readFile(data_stats_file, 'utf8', function(err, data) {
-		data_stats = JSON.parse(data);
-		if (debug) console.log(data_stats);
+		if (err) console.log(err);
+		else {
+			data_stats = JSON.parse(data);
+			if (debug) console.log(data_stats);
+		}
 	});
 }
 load_data_stats();
 
-
-
-var anno_stats;
 function loadAnnotationStats() {
 	fs.readdir(annotation_path, function(err, items) {
 		if (err) console.log(err);
@@ -166,7 +166,11 @@ router.get('/annotation', function(req, res, next) {
 	var annotator = req.query.annotator;
 	offer_doc(file, annotator, function(docs) {
 		// if (debug) console.log(docs);
-		res.render('anno', {file: file, docs: docs, annotator: annotator});
+		if (docs.length == 0) {
+			res.render('anno_done', {annotator: annotator});
+		} else {
+			res.render('anno', {file: file, docs: docs, annotator: annotator});
+		}
 	});
 });
 
@@ -234,5 +238,10 @@ router.post('/submit', function(req, res, next) {
 	}
 	res.send(JSON.stringify({error: false}));
 });
+
+// router.get('/anno_done', function(req, res, next) {
+// 	var annotator = req.query.annotator;
+// 	res.render('anno_done', {annotator: annotator});
+// });
 
 module.exports = router;

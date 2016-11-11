@@ -117,6 +117,7 @@ function sendAnnotation() {
 					if (confirm('Your annotations have been submitted successfully.\nTo continue, click "yes"; otherwise, click "no" to return to the file list.')) {
 						// $('html, body').scrollTop(0);
 						// location.reload();
+						$('#mask-layer').show();
 						$('html, body').animate({
 							scrollTop: 0
 						}, {
