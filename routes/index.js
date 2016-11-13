@@ -11,6 +11,7 @@ var annotation_path = 'annotation/';
 var data_stats_file = 'data_stats.json';
 var data_stats = [];
 var anno_stats = {};
+var issue_list = ['LGBT', 'women rights'];
 
 /**
  * Update the data set stats
@@ -55,6 +56,10 @@ function load_data_stats() {
 }
 load_data_stats();
 
+
+/**
+ * Load annotation and calculate stats
+ */
 function loadAnnotationStats() {
 	fs.readdir(annotation_path, function(err, items) {
 		if (err) console.log(err);
@@ -238,6 +243,12 @@ router.post('/submit', function(req, res, next) {
 	}
 	res.send(JSON.stringify({error: false}));
 });
+
+
+/* Send issue list for auto completion */
+router.get('/issue', function(req, res, next) {
+	res.send(issue_list);
+})
 
 // router.get('/anno_done', function(req, res, next) {
 // 	var annotator = req.query.annotator;

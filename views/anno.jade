@@ -1,6 +1,8 @@
 extends base
 block headextra
 	link(rel='stylesheet', href='stylesheets/annotation.css')
+	link(rel='stylesheet', href='stylesheets/jquery-ui.min.css')
+	script(src='javascripts/jquery-ui.min.js')
 	script(src='javascripts/annotation.js')
 block bodyextra
 	#mask-layer
@@ -11,17 +13,21 @@ block bodyextra
 					.doc-meta #{doc.id} | #{doc.postedTime}
 					.doc-body= doc.body
 					.doc-anno.noselect
-						span.doc-anno-btn.na(value='na', id='#{doc.id}', labeled='true') N/A
-						span.doc-anno-btn(value='care', id='#{doc.id}') care
-						span.doc-anno-btn(value='harm', id='#{doc.id}') harm
-						span.doc-anno-btn(value='fairness', id='#{doc.id}') fairness
-						span.doc-anno-btn(value='cheating', id='#{doc.id}') cheating
-						span.doc-anno-btn(value='loyalty', id='#{doc.id}') loyalty
-						span.doc-anno-btn(value='betrayal', id='#{doc.id}') betrayal
-						span.doc-anno-btn(value='authority', id='#{doc.id}') authority
-						span.doc-anno-btn(value='subversion', id='#{doc.id}') subversion
-						span.doc-anno-btn(value='purity', id='#{doc.id}') purity
-						span.doc-anno-btn(value='degradation', id='#{doc.id}') degradation
+						.doc-anno-btns
+							span.doc-anno-btn.na(value='na', id='#{doc.id}', labeled='true') N/A
+							span.doc-anno-btn(value='care', id='#{doc.id}') care
+							span.doc-anno-btn(value='harm', id='#{doc.id}') harm
+							span.doc-anno-btn(value='fairness', id='#{doc.id}') fairness
+							span.doc-anno-btn(value='cheating', id='#{doc.id}') cheating
+							span.doc-anno-btn(value='loyalty', id='#{doc.id}') loyalty
+							span.doc-anno-btn(value='betrayal', id='#{doc.id}') betrayal
+							span.doc-anno-btn(value='authority', id='#{doc.id}') authority
+							span.doc-anno-btn(value='subversion', id='#{doc.id}') subversion
+							span.doc-anno-btn(value='purity', id='#{doc.id}') purity
+							span.doc-anno-btn(value='degradation', id='#{doc.id}') degradation
+						.doc-anno-issue-wrapper
+							lable.doc-anno-issue-label Issue: 
+							input.doc-anno-issue(type='text')
 			p#anno-end = End of this batch =
 		#anno-operation
 			#anno-info

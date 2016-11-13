@@ -136,6 +136,27 @@ span.doc-anno-btn[labeled='true'] {
 	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
 }
 
+.doc-anno-issue-wrapper {
+	margin-top: 10px;
+}
+
+.doc-anno-issue-label {
+	font-size: 13px;
+	margin-right: 5px;
+}
+
+input.doc-anno-issue {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	outline: none;
+	padding: 5px;
+	font-size: 13px;
+}
+
+input.doc-anno-issue:hover, input.doc-anno-issue:focus {
+	border-color: #51a7e8;
+}
+
 p#anno-end {
 	font-size: 13px;
 	font-style: italic;
@@ -270,4 +291,14 @@ a#direct-return:active {
 	background-image: none;
 	border-color: #b5b5b5;
 	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Override jQuery UI CSS */
+
+.ui-menu-item {
+	font-size: 13px;
+}
+
+.ui-menu {
+	box-shadow: 2px 2px 5px rgba(0,0,0,.1);
 }
