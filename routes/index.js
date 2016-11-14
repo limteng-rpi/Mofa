@@ -1,5 +1,5 @@
-var debug = false;
 var update_stats = false;
+var debug = false;
 
 
 var express = require('express');
