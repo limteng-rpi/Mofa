@@ -2,6 +2,7 @@
 
 ## First Time to Run
 NodeJS is required.
+
 1. Clean the `data` directory.
 2. Extract all data files to the `data` directory (`gunzip` them if they are .gz files).
 3. Set `update_stats` to `true` in the first line of file `routes/index.js`.
