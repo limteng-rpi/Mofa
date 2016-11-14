@@ -1,5 +1,7 @@
-var debug = true;
-var updateStats = false;
+var debug = false;
+var update_stats = false;
+
+
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
@@ -9,43 +11,22 @@ var moment = require('moment');
 var data_path = 'data/';
 var annotation_path = 'annotation/';
 var data_stats_file = 'data_stats.json';
+var issue_list_file = 'issue_list.txt';
 var data_stats = [];
 var anno_stats = {};
-var issue_list = ['LGBT', 'women rights'];
+var issue_list = [];
 
-/**
- * Update the data set stats
- */
-if (updateStats) {
-	console.log('Updating data set stats...');
-	fs.readdir(data_path, function(err, items) {
-		if (err) console.log(err);
-		else {
-			var file_stats = [];
-			for (var i = 0; i < items.length; i++) {
-				if (items[i] == '.DS_Store') continue;
-				
-				var file_obj = {};
-				var name = items[i];
-				var file_path = data_path + name;
-				var size = ((fs.statSync(file_path)['size'] / 100000) >> 0) / 10.0;
-				var doc = count_line(file_path);
-				file_obj['name'] = name;
-				file_obj['path'] = file_path;
-				file_obj['size'] = size;
-				file_obj['doc'] = doc;
-				file_stats.push(file_obj);
-			}
-			fs.writeFile(data_stats_file, JSON.stringify(file_stats));
-		}
-	});
-}
+
+var doc_per_page = 50;
+
+
 
 /**
  * Load data set stats from file
  * To update the stats file, set updateStats to true and rerun this script.
  */
 function load_data_stats() {
+	console.log('Loading data set stats...');
 	fs.readFile(data_stats_file, 'utf8', function(err, data) {
 		if (err) console.log(err);
 		else {
@@ -54,13 +35,13 @@ function load_data_stats() {
 		}
 	});
 }
-load_data_stats();
 
 
 /**
  * Load annotation and calculate stats
  */
-function loadAnnotationStats() {
+function load_annotation_stats() {
+	console.log('Loading annotation stats...');
 	fs.readdir(annotation_path, function(err, items) {
 		if (err) console.log(err);
 		else {
@@ -79,7 +60,6 @@ function loadAnnotationStats() {
 					var file = segments[0];
 					var id = segments[1];
 					var annotator = segments[2];
-					console.log(file, id, annotator);
 					if (anno_stats.hasOwnProperty(annotator)) {
 						var anno_list = anno_stats[annotator];
 						if (anno_list.hasOwnProperty(file)) {
@@ -103,7 +83,6 @@ function loadAnnotationStats() {
 		}
 	});
 }
-loadAnnotationStats();
 
 /**
  * count line number (syncronically)
@@ -118,7 +97,60 @@ function count_line(filename) {
 	return count;
 }
 
-var doc_per_page = 50;
+function load_issue_list() {
+	console.log('Loading issue list...');
+	issue_list = [];
+	var reader = new readlines(issue_list_file);
+	var line;
+	while (line = reader.next()) {
+		var lineStr = line.toString().trim();
+		if (lineStr.length == 0) continue;
+		issue_list.push(lineStr);
+	}
+}
+
+
+function start() {
+	// Update the data set stats
+	if (update_stats) {
+		console.log('Updating data set stats...');
+		fs.readdir(data_path, function(err, items) {
+			if (err) console.log(err);
+			else {
+				var file_stats = [];
+				for (var i = 0; i < items.length; i++) {
+					if (items[i] == '.DS_Store') continue;
+					
+					var file_obj = {};
+					var name = items[i];
+					var file_path = data_path + name;
+					var size = ((fs.statSync(file_path)['size'] / 100000) >> 0) / 10.0;
+					var doc = count_line(file_path);
+					file_obj['name'] = name;
+					file_obj['path'] = file_path;
+					file_obj['size'] = size;
+					file_obj['doc']  = doc;
+					file_stats.push(file_obj);
+				}
+				fs.writeFile(data_stats_file, JSON.stringify(file_stats));
+				console.log('Data set stats updated.');
+				load_data_stats();
+				load_annotation_stats();
+				load_issue_list();
+				console.log('Done');
+			}
+		});
+	} else {
+		load_data_stats();
+		load_annotation_stats();
+		load_issue_list();
+		console.log('Done');
+	}
+
+	
+}
+start();
+
 function offer_doc(file, annotator, callback) {
 	var reader = new readlines(data_path + file);
 	var line;
@@ -142,6 +174,10 @@ function offer_doc(file, annotator, callback) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+	res.render('index');
+});
+
+router.get('/list', function(req, res, next) {
 	var annotator = req.query.annotator;
 
 	annotator_data_stats = [];
@@ -163,14 +199,13 @@ router.get('/', function(req, res, next) {
 			annotator_data_stats.push(file_stats);
 		}
 	}
-	res.render('index', {data_stats: annotator_data_stats, annotator: annotator});
+	res.render('list', {data_stats: annotator_data_stats, annotator: annotator});
 });
 
 router.get('/annotation', function(req, res, next) {
 	var file = req.query.file;
 	var annotator = req.query.annotator;
 	offer_doc(file, annotator, function(docs) {
-		// if (debug) console.log(docs);
 		if (docs.length == 0) {
 			res.render('anno_done', {annotator: annotator});
 		} else {
@@ -199,9 +234,9 @@ router.post('/submit', function(req, res, next) {
 			annotated_id[id] = true;
 			var line = file + '\t' + id + '\t' + annotator + '\t';
 			var anno = annotation[id]['annotation'];
-			// console.log(anno);
+			var issue = annotation[id]['issue'];
 			if (anno.hasOwnProperty('na') && anno['na'] == true) {
-				line += 'na\n';
+				line += 'na';
 			} else {
 				var first = true;
 				for (var mf in anno) {
@@ -214,9 +249,10 @@ router.post('/submit', function(req, res, next) {
 						}
 					}
 				}
-				if (first) line += 'na\n';
-				else line += '\n';
+				if (first) line += 'na';
+				// else line += '\n';
 			}
+			line += '\t' + issue + '\n';
 			writer.write(line);
 		}
 	}
@@ -250,9 +286,18 @@ router.get('/issue', function(req, res, next) {
 	res.send(issue_list);
 })
 
-// router.get('/anno_done', function(req, res, next) {
-// 	var annotator = req.query.annotator;
-// 	res.render('anno_done', {annotator: annotator});
-// });
+
+/* Receive new issues */
+router.post('/new_issue', function(req, res, next) {
+	var new_issue_list = req.body.issue_list;
+	// console.log(new_issue_list);
+	// update issue_list
+	for (var i = 0; i < new_issue_list.length; i++) {
+		if (issue_list.indexOf(new_issue_list[i]) == -1) {
+			issue_list.push(new_issue_list[i]);
+			fs.appendFileSync(issue_list_file, new_issue_list[i] + '\n');
+		}
+	}
+});
 
 module.exports = router;

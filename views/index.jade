@@ -1,25 +1,17 @@
 extends base
 block headextra
 	link(rel='stylesheet', href='stylesheets/index.css')
-	script(src='javascripts/ui.js')
+	script(src='javascripts/login.js')
 block bodyextra
 	#main
-		#file-table-wrapper
-			table#file-table
-				tr#file-table-header
-					th Filename
-					th Size
-					th Tweet Number
-					th Progress
-					th Operation
-				- each file_stats in annotator_data_stats
-					tr.file-table-row
-						td #[img.file-icon(src='images/file_icon.png')]#{file_stats.name}
-						td #{file_stats.size} MB
-						td #{file_stats.doc}
-						td
-							.progress-bar-wrapper
-								.progress-bar(progress='#{file_stats.annotated}')
-								.progress-bar-text #{file_stats.annotated}/#{file_stats.doc}
-						td
-							a(href='/annotation?file=#{file_stats.name}&annotator=#{annotator}') Annotate
+		#login-panel
+			#login-title Login
+			.login-items
+				label.login-label Annotator
+				input#login-annotator(type='text' placeholder='Annotator name')
+				label.login-label Dataset
+				select#login-dataset
+					option Random
+					option Complete
+				button#login-enter(disabled='disabled' type='button') Enter
+

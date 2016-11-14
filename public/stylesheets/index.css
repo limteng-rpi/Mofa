@@ -2,111 +2,78 @@
 /* Stylesheet file for the index page */
 /* ================================== */
 div#main {
-	padding-top: 80px;
+	padding-top: 200px;
 }
 
-div#file-table-wrapper {
-	padding: 0 50px;
-	position: relative;
-	width: 100%;
-}
-
-/* File Table */
-table#file-table {
-	width: 100%;
-	/*border-collapse: collapse;*/
-	border-spacing: 0;
-
-}
-
-
-tr#file-table-header {
-	background-color: #f2f9fc;
-}
-
-tr#file-table-header > th {
-	padding: 0 10px;
-	font-size: 14px;
+#login-title {
+	margin-bottom: 10px;
+	text-align: center;
+	font-size: 20px;
 	font-weight: 300;
-	line-height: 2;
-	text-align: left;
-	border: 1px solid #c9e6f2;
-	border-left-width: 0;
-	border-right-width: 0;
-}
-tr#file-table-header > th:first-child {
-	border-top-left-radius: 4px;
-	border-left-width: 1px;
 }
 
-tr#file-table-header > th:last-child {
-	border-top-right-radius: 4px;
-	border-right-width: 1px;
-}
-
-tr.file-table-row {
-	height: 35px;
-	font-size: 13px;
-	line-height: 1.5;
-	color: #333;
-}
-
-tr.file-table-row:hover {
-	background-color: #f5f5f5;
-}
-
-img.file-icon {
-	margin-right: 5px;
-}
-
-tr.file-table-row > td {
-	padding: 0 10px;
-	border-bottom: 1px solid #eee;
-	color: #888;
-}
-
-tr.file-table-row > td:first-child {
-	border-left: 1px solid #ddd;
-	color: #4078c0;
-}
-
-
-tr.file-table-row > td:last-child {
-	border-right: 1px solid #ddd;
-}
-
-
-
-tr.file-table-row:last-child > td {
-	border-bottom: 1px solid #ddd;
-}
-
-div.progress-bar-wrapper {
+div#login-panel {
 	position: relative;
 	border: 1px solid #ddd;
 	border-radius: 3px;
-	width: 150px;
-	height: 12px;
-	background-color: #f8f8f8;
-	overflow: hidden;
-	box-shadow: 0 0 5px rgba(255,255,255,1);
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	width: 280px;
+	line-height: 2;
 }
 
-div.progress-bar {
-	height: 12px;
-	width: 0;
-	background-color: #4078c0;
-	transition: width .5s ease-in-out;
+label.login-label {
+	display: inline-block;
+	width: 100px;
+	font-size: 13px;
 }
 
-div.progress-bar-text {
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 12px;
-	width: 100%;
-	text-align: center;
-	font-size: 9px;
-	font-weight: 800;
-	line-height: 10px;
+input#login-annotator {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	outline: none;
+	padding: 5px;
+	font-size: 13px;
 }
+
+input#login-annotator:hover, input#login-annotator:focus {
+	border-color: #51a7e8;
+}
+
+select#login-dataset {
+	font-size: 13px;
+}
+
+button#login-enter {
+	display: block;
+	position: relative;
+
+	border: 0;
+	border-radius: 4px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+	outline: none;
+
+	height: 30px;
+	width: 80px;
+
+	font-size: 13px;
+	font-weight: 300;
+
+	cursor: pointer;
+
+	color: #fff;
+	background-color: #0080ff;
+}
+
+button#login-enter:hover {
+	background-color: #0087ff;
+}
+
+
+button#login-enter:disabled, button#login-enter:disabled:hover {
+	background-color: #ccc;
+}
+

@@ -26,8 +26,8 @@ block bodyextra
 							span.doc-anno-btn(value='purity', id='#{doc.id}') purity
 							span.doc-anno-btn(value='degradation', id='#{doc.id}') degradation
 						.doc-anno-issue-wrapper
-							lable.doc-anno-issue-label Issue: 
-							input.doc-anno-issue(type='text')
+							lable.doc-anno-issue-label issue: 
+							input.doc-anno-issue(type='text' id='#{doc.id}')
 			p#anno-end = End of this batch =
 		#anno-operation
 			#anno-info

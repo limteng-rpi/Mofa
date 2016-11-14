@@ -4,56 +4,18 @@
 var fileAnnotation = {};
 var annotator;
 var file;
+var availableTags = [];
+var newTags = [];
 
 // reset the current annotation field
 function resetAnnotationField() {
 	$('li.doc-item').each(function(i, v) {
 		var id = $(v).attr('id');
-		fileAnnotation[id] = {annotation: {na: true}};
+		fileAnnotation[id] = {annotation: {na: true}, issue: ''};
 	});
 }
 
-
-// function generateAnnotationField() {
-// 	if (data === undefined || data.length === 0) {
-// 		// todo: error action
-// 	} else {
-// 		var docList = $('ul#doc-list');
-// 		$.each(data, function(i, v) {
-// 			var item = $('<li class="doc-item"></li>');
-// 			// append tweet metadata
-// 			var meta = $('<div class="doc-meta">' + v.id + ' | ' + v.postedTime +  '</li>');
-// 			item.append(meta);
-// 			// append tweet body
-// 			var body = $('<div class="doc-body">' + v.body + '</li>');
-// 			item.append(body);
-// 			// append annotation bar
-// 			item.append(generateAnnotationBar(v.id));
-// 			docList.append(item);
-// 		});
-// 		var endText = $('<p id="anno-end">= End of this batch =</p>');
-// 		docList.append(endText);
-// 	}
-// }
-
-// function generateAnnotationBar(id) {
-// 	var annoBar = $('<div class="doc-anno noselect"></div>');
-// 	var careBtn        = $('<span class="doc-anno-btn" value="care" id="' + id + '">care</span>');
-// 	var harmBtn        = $('<span class="doc-anno-btn" value="harm" id="' + id + '">harm</span>');
-// 	var fairnessBtn    = $('<span class="doc-anno-btn" value="fairness" id="' + id + '">fairness</span>');
-// 	var cheatingBtn    = $('<span class="doc-anno-btn" value="cheating" id="' + id + '">cheating</span>');
-// 	var loyaltyBtn     = $('<span class="doc-anno-btn" value=""loyalty id="' + id + '">loyalty</span>');
-// 	var betrayalBtn    = $('<span class="doc-anno-btn" value="betrayal" id="' + id + '">betrayal</span>');
-// 	var authorityBtn   = $('<span class="doc-anno-btn" value="authority" id="' + id + '">authority</span>');
-// 	var subversionBtn  = $('<span class="doc-anno-btn" value="subversion" id="' + id + '">subversion</span>');
-// 	var purityBtn      = $('<span class="doc-anno-btn" value="purity" id="' + id + '">purity</span>');
-// 	var degradationBtn = $('<span class="doc-anno-btn" value="degradation" id="' + id + '">degradation</span>');
-// 	annoBar.append(careBtn, harmBtn, fairnessBtn, cheatingBtn, loyaltyBtn, 
-// 		betrayalBtn, authorityBtn, subversionBtn, purityBtn, degradationBtn);
-// 	return annoBar;
-// }
-
-
+// highlight hashtags, usernames, and URLs
 function highlight() {
 	// highlight username
 	$('.doc-body').each(function(i, v) {
@@ -65,14 +27,16 @@ function highlight() {
 	});
 }
 
+// click 'return' button
 function returnButtonHandler() {
 	$('button#return').click(function() {
 		if (confirm('Return to the file list without saving the current annotations?\n(To save before leaving, click the "Next Batch" button first.)')) {
-			window.location.href = "/?annotator=" + annotator;
+			window.location.href = "/list?annotator=" + annotator;
 		}
 	});
 }
 
+// click annotation buttons
 function annotationButtonHandler() {
 	$('span.doc-anno-btn').click(function() {
 		var labeled = $(this).attr('labeled');
@@ -99,11 +63,19 @@ function annotationButtonHandler() {
 	});
 }
 
+
+// send annotation results and new issues
 function sendAnnotation() {
 	$('button#next').click(function() {
+		$.ajax({
+			url: '/new_issue',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({issue_list: newTags}),
+			dataType: 'json'
+		});
+
 		var submit = {annotator: annotator, annotation: fileAnnotation, file: file};
-		console.log(submit);
-		// $.post('/submit', submit).done(function() {});
 		$.ajax({
 			url: '/submit',
 			type: 'POST',
@@ -128,7 +100,7 @@ function sendAnnotation() {
 							}
 						});
 					} else {
-						window.location.href = "/?annotator=" + annotator;
+						window.location.href = "/list?annotator=" + annotator;
 					}
 				}
 			}
@@ -136,9 +108,8 @@ function sendAnnotation() {
 	});
 }
 
-var availableTags = [];
-var newTags = [];
 
+// request tagged issues from the server
 function requestIssueList() {
 	$.getJSON('/issue', function(issueList) {
 		availableTags = issueList;
@@ -146,14 +117,20 @@ function requestIssueList() {
 	});
 }
 
+// enable auto completion for all text inputs
 function enableAutoCompletion() {
 	$('.doc-anno-issue').autocomplete({
 		source: availableTags.concat(newTags)
 	});
 }
 
+// update the issue list so that new issues tagged in the current page will appear in the candidates
 function updateAutoCompletionTags() {
 	$('.doc-anno-issue').change(function() {
+		var id = $(this).attr('id');
+		var tag = $(this).val().trim();
+		fileAnnotation[id]['issue'] = tag;
+
 		newTags = [];
 		$('.doc-anno-issue').each(function(i, v) {
 			var tag = $(v).val();
@@ -171,15 +148,11 @@ $(document).ready(function() {
 	file = $('#anno-field').attr('file');
 	annotator = $('#anno-field').attr('annotator');
 
-	// request issue list for auto completion
 	requestIssueList();
-	// resetAnnotationField()
-	// generateAnnotationField();
 	resetAnnotationField();
 	annotationButtonHandler();
 	sendAnnotation();
 	returnButtonHandler();
 	highlight();
-	
 	updateAutoCompletionTags();
 });
