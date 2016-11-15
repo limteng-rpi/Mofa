@@ -11,7 +11,7 @@ var newTags = [];
 function resetAnnotationField() {
 	$('li.doc-item').each(function(i, v) {
 		var id = $(v).attr('id');
-		fileAnnotation[id] = {annotation: {na: true}, issue: ''};
+		fileAnnotation[id] = {annotation: {}, issue: ''};
 	});
 }
 
@@ -42,22 +42,23 @@ function annotationButtonHandler() {
 		var labeled = $(this).attr('labeled');
 		var value = $(this).attr('value');
 		var id = $(this).attr('id');
+
 		if (labeled == 'true') {
 			// the moral foundation is checked
-			if (value != 'na') {
+			if (value != 'nm') {
 				$(this).attr('labeled', 'false');
 				fileAnnotation[id]['annotation'][value] = false;
 			}
 		} else {
 			// the moral foundation is not checked
 			$(this).attr('labeled', 'true');
-			if (value == 'na') {
-				$('span.doc-anno-btn[value!="na"][id="' + id +'"]').attr('labeled', false);
+			if (value == 'nm') {
+				$('span.doc-anno-btn[value!="nm"][id="' + id +'"]').attr('labeled', false);
 				fileAnnotation[id]['annotation'][value] = true;
 			} else {
-				$('span.doc-anno-btn[value="na"][id="' + id + '"]').attr('labeled', false);
+				$('span.doc-anno-btn[value="nm"][id="' + id + '"]').attr('labeled', false);
 				fileAnnotation[id]['annotation'][value] = true;
-				fileAnnotation[id]['annotation']['na'] = false;
+				fileAnnotation[id]['annotation']['nm'] = false;
 			}
 		}
 	});
@@ -75,7 +76,13 @@ function sendAnnotation() {
 			dataType: 'json'
 		});
 
-		var submit = {annotator: annotator, annotation: fileAnnotation, file: file};
+		validAnnotation = {};
+		$.each(fileAnnotation, function(k, v) {
+			if (!$.isEmptyObject(v.annotation)) {
+				validAnnotation[k] = v;
+			}
+		});
+		var submit = {annotator: annotator, annotation: validAnnotation, file: file};
 		$.ajax({
 			url: '/submit',
 			type: 'POST',

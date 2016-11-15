@@ -1,4 +1,5 @@
 var update_stats = false;
+var random_sample = false;
 var debug = false;
 
 
@@ -7,6 +8,7 @@ var router = express.Router();
 var fs = require('fs');
 var readlines = require('n-readlines');
 var moment = require('moment');
+var data_process = require('../modules/data_process')
 
 var data_path = 'data/';
 var annotation_path = 'annotation/';
@@ -18,8 +20,7 @@ var issue_list = [];
 
 
 var doc_per_page = 50;
-
-
+var random_file_number = 100;
 
 /**
  * Load data set stats from file
@@ -42,6 +43,12 @@ function load_data_stats() {
  */
 function load_annotation_stats() {
 	console.log('Loading annotation stats...');
+	// create the annotation directory if it doesn't exist
+	if (!fs.existsSync(annotation_path)) {
+		fs.mkdirSync(annotation_path);
+		return;
+	}
+
 	fs.readdir(annotation_path, function(err, items) {
 		if (err) console.log(err);
 		else {
@@ -111,6 +118,11 @@ function load_issue_list() {
 
 
 function start() {
+	if (random_sample) {
+		data_process.random_sample(random_file_number);
+		return;
+	}
+
 	// Update the data set stats
 	if (update_stats) {
 		console.log('Updating data set stats...');
@@ -146,8 +158,6 @@ function start() {
 		load_issue_list();
 		console.log('Done');
 	}
-
-	
 }
 start();
 
@@ -235,9 +245,12 @@ router.post('/submit', function(req, res, next) {
 			var line = file + '\t' + id + '\t' + annotator + '\t';
 			var anno = annotation[id]['annotation'];
 			var issue = annotation[id]['issue'];
-			if (anno.hasOwnProperty('na') && anno['na'] == true) {
-				line += 'na';
+			// ignore skipped tweets, which will be shown again in the next batch
+			// if (Object.keys(anno).length === 0 && anno.constructor === Object) continue;
+			if (anno.hasOwnProperty('nm') && anno['nm'] == true) {
+				line += 'nm';
 			} else {
+				var value_num = 0;
 				var first = true;
 				for (var mf in anno) {
 					if (anno.hasOwnProperty(mf) && anno[mf] == true) {
@@ -249,7 +262,7 @@ router.post('/submit', function(req, res, next) {
 						}
 					}
 				}
-				if (first) line += 'na';
+				if (first) line += 'nm';
 				// else line += '\n';
 			}
 			line += '\t' + issue + '\n';
@@ -284,7 +297,7 @@ router.post('/submit', function(req, res, next) {
 /* Send issue list for auto completion */
 router.get('/issue', function(req, res, next) {
 	res.send(issue_list);
-})
+});
 
 
 /* Receive new issues */
@@ -299,5 +312,10 @@ router.post('/new_issue', function(req, res, next) {
 		}
 	}
 });
+
+
+// router.get('/random_sample', function(req, res, next) {
+// 	res.render('random.jade');
+// });
 
 module.exports = router;

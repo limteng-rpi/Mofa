@@ -1,0 +1,10 @@
+extends base
+block headextra
+	link(rel='stylesheet', href='stylesheets/random.css')
+block bodyextra
+	#anno-field
+		#msg-wrapper
+			#msg
+				img#loader(src='images/ajax-loader.gif')
+				#msg-text Click to start random sampling.
+				button#start Start
