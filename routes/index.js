@@ -120,7 +120,7 @@ function load_issue_list() {
 function start() {
 	if (random_sample) {
 		data_process.random_sample(random_file_number);
-		return;
+		process.exit(0);
 	}
 
 	// Update the data set stats
