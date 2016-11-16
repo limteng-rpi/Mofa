@@ -13,8 +13,3 @@ NodeJS is required.
 8. Set `update_stats` back to `false`.
 9. Run `DEBUG=mofa:* npm start`.
 10. Visit \<IP_ADDRESS/DOMAIN_NAME\>:3000 (server) or 127.0.0.1:3000 (local).
-
-# Files and Directories
-- `/issue_list.txt`: issue list file. Pre-defined issues can be added to this file. New issues tagged by annotators will be appended to this file automatically.
-- `/data/`: data file directory.
-- `/annotation/`: annotation file directory.
