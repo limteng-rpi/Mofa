@@ -4,6 +4,7 @@
 var fileAnnotation = {};
 var annotator;
 var file;
+var dataset;
 var availableTags = [];
 var newTags = [];
 
@@ -31,7 +32,7 @@ function highlight() {
 function returnButtonHandler() {
 	$('button#return').click(function() {
 		if (confirm('Return to the file list without saving the current annotations?\n(To save before leaving, click the "Next Batch" button first.)')) {
-			window.location.href = "/list?annotator=" + annotator;
+			window.location.href = "/list?annotator=" + annotator + '&dataset=' + dataset;
 		}
 	});
 }
@@ -107,7 +108,7 @@ function sendAnnotation() {
 							}
 						});
 					} else {
-						window.location.href = "/list?annotator=" + annotator;
+						window.location.href = '/list?annotator=' + annotator + '&dataset=' + dataset;
 					}
 				}
 			}
@@ -154,6 +155,7 @@ function updateAutoCompletionTags() {
 $(document).ready(function() {
 	file = $('#anno-field').attr('file');
 	annotator = $('#anno-field').attr('annotator');
+	dataset = $('#anno-field').attr('dataset');
 
 	requestIssueList();
 	resetAnnotationField();

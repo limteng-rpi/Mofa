@@ -12,7 +12,8 @@ function checkLoginItem() {
 function enterButtonHandler() {
 	$('button#login-enter').click(function() {
 		var annotator = $('#login-annotator').val().trim();
-		window.location.href = "/list?annotator=" + annotator;
+		var dataset = $("#login-dataset").val();
+		window.location.href = "/list?annotator=" + annotator + '&dataset=' + dataset;
 	});
 }
 

@@ -11,16 +11,26 @@ var moment = require('moment');
 var data_process = require('../modules/data_process')
 
 var data_path = 'data/';
+var complete_data_path = 'data/';
+var random_data_path = 'data_random/'
+
 var annotation_path = 'annotation/';
+var complete_anno_path = 'annotation/';
+var random_anno_path = 'annotation_random/';
+
 var data_stats_file = 'data_stats.json';
+var complete_data_stats_file = 'data_stats.json';
+var random_data_stats_file = 'data_stats_random.json';
+
 var issue_list_file = 'issue_list.txt';
-var data_stats = [];
-var anno_stats = {};
+
+// var data_stats = [];
+// var anno_stats = {};
 var issue_list = [];
 
 
 var doc_per_page = 50;
-var random_file_number = 100;
+var random_file_number = 20;
 
 /**
  * Load data set stats from file
@@ -116,52 +126,66 @@ function load_issue_list() {
 	}
 }
 
-
+var complete_data_stats = [];
+var complete_anno_stats = {};
+var random_data_stats = [];
+var random_anno_stats = {};
 function start() {
 	if (random_sample) {
 		data_process.random_sample(random_file_number);
-		process.exit(0);
+		console.log('[!] Re-run the program.');
+	} else if (update_stats) {
+		data_process.update_data_stats(complete_data_path, complete_data_stats_file);
+		data_process.update_data_stats(random_data_path, random_data_stats_file);
+		console.log('[!] Re-run the program.');
+	} else {
+		complete_data_stats = data_process.load_data_stats(complete_data_stats_file);
+		complete_anno_stats = data_process.read_anno_directory(complete_anno_path);
+		random_data_stats   = data_process.load_data_stats(random_data_stats_file);
+		random_anno_stats   = data_process.read_anno_directory(random_anno_path);
 	}
 
 	// Update the data set stats
-	if (update_stats) {
-		console.log('Updating data set stats...');
-		fs.readdir(data_path, function(err, items) {
-			if (err) console.log(err);
-			else {
-				var file_stats = [];
-				for (var i = 0; i < items.length; i++) {
-					if (items[i] == '.DS_Store') continue;
+	// if (update_stats) {
+	// 	console.log('Updating data set stats...');
+	// 	fs.readdir(data_path, function(err, items) {
+	// 		if (err) console.log(err);
+	// 		else {
+	// 			var file_stats = [];
+	// 			for (var i = 0; i < items.length; i++) {
+	// 				if (items[i] == '.DS_Store') continue;
 					
-					var file_obj = {};
-					var name = items[i];
-					var file_path = data_path + name;
-					var size = ((fs.statSync(file_path)['size'] / 100000) >> 0) / 10.0;
-					var doc = count_line(file_path);
-					file_obj['name'] = name;
-					file_obj['path'] = file_path;
-					file_obj['size'] = size;
-					file_obj['doc']  = doc;
-					file_stats.push(file_obj);
-				}
-				fs.writeFile(data_stats_file, JSON.stringify(file_stats));
-				console.log('Data set stats updated.');
-				load_data_stats();
-				load_annotation_stats();
-				load_issue_list();
-				console.log('Done');
-			}
-		});
-	} else {
-		load_data_stats();
-		load_annotation_stats();
-		load_issue_list();
-		console.log('Done');
-	}
+	// 				var file_obj = {};
+	// 				var name = items[i];
+	// 				var file_path = data_path + name;
+	// 				var size = ((fs.statSync(file_path)['size'] / 100000) >> 0) / 10.0;
+	// 				var doc = count_line(file_path);
+	// 				file_obj['name'] = name;
+	// 				file_obj['path'] = file_path;
+	// 				file_obj['size'] = size;
+	// 				file_obj['doc']  = doc;
+	// 				file_stats.push(file_obj);
+	// 			}
+	// 			fs.writeFile(data_stats_file, JSON.stringify(file_stats));
+	// 			console.log('Data set stats updated.');
+	// 			load_data_stats();
+	// 			load_annotation_stats();
+	// 			load_issue_list();
+	// 			console.log('Done');
+	// 		}
+	// 	});
+	// } else {
+	// 	load_data_stats();
+	// 	load_annotation_stats();
+	// 	load_issue_list();
+	// 	console.log('Done');
+	// }
 }
 start();
 
-function offer_doc(file, annotator, callback) {
+function offer_doc(file, annotator, dataset, callback) {
+	var data_path = (dataset == 'complete')? complete_data_path : random_data_path;
+	var anno_stats = (dataset == 'complete')? complete_anno_stats : random_anno_stats;
 	var reader = new readlines(data_path + file);
 	var line;
 	var count = 0;
@@ -187,9 +211,20 @@ router.get('/', function(req, res, next) {
 	res.render('index');
 });
 
+
 router.get('/list', function(req, res, next) {
 	var annotator = req.query.annotator;
+	var dataset = req.query.dataset;
 
+	var anno_stats;
+	var data_stats;
+	if (dataset == 'complete') {
+		anno_stats = complete_anno_stats;
+		data_stats = complete_data_stats;
+	} else {
+		anno_stats = random_anno_stats;
+		data_stats = random_data_stats;
+	}
 	annotator_data_stats = [];
 	if (anno_stats.hasOwnProperty(annotator)) {
 		for (var i = 0; i < data_stats.length; i++) {
@@ -209,29 +244,34 @@ router.get('/list', function(req, res, next) {
 			annotator_data_stats.push(file_stats);
 		}
 	}
-	res.render('list', {data_stats: annotator_data_stats, annotator: annotator});
+	res.render('list', {data_stats: annotator_data_stats, annotator: annotator, dataset: dataset});
 });
+
 
 router.get('/annotation', function(req, res, next) {
 	var file = req.query.file;
 	var annotator = req.query.annotator;
-	offer_doc(file, annotator, function(docs) {
+	var dataset = req.query.dataset;
+	offer_doc(file, annotator, dataset, function(docs) {
 		if (docs.length == 0) {
-			res.render('anno_done', {annotator: annotator});
+			res.render('anno_done', {annotator: annotator, dataset: dataset});
 		} else {
-			res.render('anno', {file: file, docs: docs, annotator: annotator});
+			res.render('anno', {file: file, docs: docs, annotator: annotator, dataset: dataset});
 		}
 	});
 });
+
 
 router.post('/submit', function(req, res, next) {
 	var datetime = moment().format('YYYYMMDD_HHmmss');
 	var file = req.body.file;
 	var annotator = req.body.annotator;
 	var annotation = req.body.annotation;
+	var dataset = req.body.dataset;
 	console.log('[' + datetime + ']Received annotations from annotator ' + annotator + ' of documents in file ' + file);
 	// write to file
-	var writer = fs.createWriteStream(annotation_path + annotator 
+	var anno_path = (dataset == 'complete')? complete_anno_path : random_anno_path;
+	var writer = fs.createWriteStream(anno_path + annotator 
 		+ '_' + datetime + '.txt');
 	writer.on('error', function(err) {
 		console.log(err);
@@ -271,6 +311,7 @@ router.post('/submit', function(req, res, next) {
 	}
 	writer.end();
 	// update anno stats
+	var anno_stats = (dataset == 'complete')? complete_anno_stats : random_anno_stats;
 	if (anno_stats.hasOwnProperty(annotator)) {
 		var anno_list = anno_stats[annotator];
 		if (anno_list.hasOwnProperty(file)) {

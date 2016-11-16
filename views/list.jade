@@ -22,4 +22,4 @@ block bodyextra
 								.progress-bar(progress='#{file_stats.annotated}')
 								.progress-bar-text #{file_stats.annotated}/#{file_stats.doc}
 						td
-							a(href='/annotation?file=#{file_stats.name}&annotator=#{annotator}') Annotate
+							a(href='/annotation?file=#{file_stats.name}&annotator=#{annotator}&dataset=#{dataset}') Annotate

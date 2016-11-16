@@ -6,7 +6,7 @@ block headextra
 	script(src='javascripts/annotation.js')
 block bodyextra
 	#mask-layer
-	#anno-field(annotator='#{annotator}', file='#{file}')
+	#anno-field(annotator='#{annotator}', file='#{file}', dataset='#{dataset}')
 		ul#doc-list
 			- each doc in docs
 				li.doc-item(id='#{doc.id}')
@@ -38,4 +38,4 @@ block bodyextra
 					span.anno-info-item-key Source:
 					span.anno-info-item-value= file
 			button#next(type='button') Next Batch
-			button#return(type='button', annotator='#{annotator}') Return
+			button#return(type='button', annotator='#{annotator}', dataset='#{dataset}') Return
