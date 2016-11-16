@@ -1,5 +1,5 @@
-var update_stats = false;
 var random_sample = false;
+var update_stats = false;
 var debug = false;
 
 
