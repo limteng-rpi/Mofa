@@ -51,10 +51,20 @@ div.doc-meta {
 
 div.doc-body {
 	margin: 12px 0;
+	padding: 1px 5px;
 	font-size: 14px;
 	line-height: 20px;
 
 	color: #292f33;
+}
+
+span.doc-body-selected {
+	border-radius: 3px;
+	border-bottom: 1px solid #0080ff;
+	border-top: 1px solid #0080ff;
+    color: #312100;
+    background-color: #deeff7;
+    box-shadow: 0 0 3px rgba(0,128,255,.2);
 }
 
 span.doc-body-user,
@@ -136,16 +146,24 @@ span.doc-anno-btn[labeled='true'] {
 	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
 }
 
-.doc-anno-issue-wrapper {
-	margin-top: 10px;
+hr {
+	border: 0;
+    border-bottom: 1px dashed #eee;
+    margin-top: 15px;
+    background: #ddd;
 }
 
-.doc-anno-issue-label {
+.doc-anno-issue-wrapper, .doc-anno-extra-wrapper {
+	margin-top: 5px;
+}
+
+.doc-anno-issue-label,
+.doc-anno-comment-label {
 	font-size: 13px;
-	margin-right: 5px;
+	margin: 0 10px;
 }
 
-input.doc-anno-issue {
+input.doc-anno-issue, input.doc-anno-comment {
 	border: 1px solid #ddd;
 	border-radius: 3px;
 	outline: none;
@@ -153,7 +171,50 @@ input.doc-anno-issue {
 	font-size: 13px;
 }
 
-input.doc-anno-issue:hover, input.doc-anno-issue:focus {
+input.doc-anno-comment {
+	width: 400px;
+}
+
+button.doc-anno-skip-button,
+button.doc-anno-unclear-button {
+	display: inline-block;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin-right: 5px;
+	outline: none;
+
+	height: 25px;
+	width: 70px;
+
+	font-size: 12px;
+	font-weight: 800;
+
+	background-color: #eee;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+	cursor: pointer;
+}
+
+button.doc-anno-skip-button:hover,
+button.doc-anno-unclear-button:hover {
+	background-color: #ddd;
+	background-image: -webkit-linear-gradient(#eee, #ddd);
+	background-image: linear-gradient(#eee, #ddd);
+	border-color: #ccc;
+}
+
+button.doc-anno-skip-button[marked='true'],
+button.doc-anno-unclear-button[marked='true'] {
+	z-index: 3;
+	color: #2480e2;
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
+}
+
+input.doc-anno-issue:hover,
+input.doc-anno-issue:focus,
+input.doc-anno-comment:hover,
+input.doc-anno-comment:focus {
 	border-color: #51a7e8;
 }
 

@@ -293,6 +293,10 @@ router.post('/submit', function(req, res, next) {
 			var line = file + '\t' + id + '\t' + annotator + '\t';
 			var anno = annotation[id]['annotation'];
 			var issue = annotation[id]['issue'];
+			var mark = annotation[id]['mark'];
+			var markstart = annotation[id]['markstart'];
+			var markend = annotation[id]['markend'];
+			var comment = annotation[id]['comment'];
 			// ignore skipped tweets, which will be shown again in the next batch
 			// if (Object.keys(anno).length === 0 && anno.constructor === Object) continue;
 			if (anno.hasOwnProperty('nm') && anno['nm'] == true) {
@@ -311,9 +315,8 @@ router.post('/submit', function(req, res, next) {
 					}
 				}
 				if (first) line += 'nm';
-				// else line += '\n';
 			}
-			line += '\t' + issue + '\n';
+			line += '\t' + issue + '\t' + comment + '\t' + mark + '\t' + markstart + '\t' + markend + '\n';
 			writer.write(line);
 		}
 	}
@@ -355,7 +358,7 @@ router.post('/new_issue', function(req, res, next) {
 	// console.log(new_issue_list);
 	// update issue_list
 	for (var i = 0; i < new_issue_list.length; i++) {
-		if (issue_list.indexOf(new_issue_list[i]) == -1) {
+		if (issue_list.indexOf(new_issue_list[i]) == -1 && new_issue_list[i].length > 0) {
 			issue_list.push(new_issue_list[i]);
 			fs.appendFileSync(issue_list_file, new_issue_list[i] + '\n');
 		}

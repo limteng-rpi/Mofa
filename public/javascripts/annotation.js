@@ -11,8 +11,8 @@ var newTags = [];
 // reset the current annotation field
 function resetAnnotationField() {
 	$('li.doc-item').each(function(i, v) {
-		var id = $(v).attr('id');
-		fileAnnotation[id] = {annotation: {}, issue: ''};
+		var id = $(v).attr('docid');
+		fileAnnotation[id] = {annotation: {}, issue: '', comment: '', mark: '', markstart: -1, markend: -1};
 	});
 }
 
@@ -42,7 +42,7 @@ function annotationButtonHandler() {
 	$('span.doc-anno-btn').click(function() {
 		var labeled = $(this).attr('labeled');
 		var value = $(this).attr('value');
-		var id = $(this).attr('id');
+		var id = $(this).attr('docid');
 
 		if (labeled == 'true') {
 			// the moral foundation is checked
@@ -54,10 +54,10 @@ function annotationButtonHandler() {
 			// the moral foundation is not checked
 			$(this).attr('labeled', 'true');
 			if (value == 'nm') {
-				$('span.doc-anno-btn[value!="nm"][id="' + id +'"]').attr('labeled', false);
+				$('span.doc-anno-btn[value!="nm"][docid="' + id +'"]').attr('labeled', false);
 				fileAnnotation[id]['annotation'][value] = true;
 			} else {
-				$('span.doc-anno-btn[value="nm"][id="' + id + '"]').attr('labeled', false);
+				$('span.doc-anno-btn[value="nm"][docid="' + id + '"]').attr('labeled', false);
 				fileAnnotation[id]['annotation'][value] = true;
 				fileAnnotation[id]['annotation']['nm'] = false;
 			}
@@ -135,8 +135,8 @@ function enableAutoCompletion() {
 // update the issue list so that new issues tagged in the current page will appear in the candidates
 function updateAutoCompletionTags() {
 	$('.doc-anno-issue').change(function() {
-		var id = $(this).attr('id');
-		var tag = $(this).val().trim();
+		var id = $(this).attr('docid');
+		var tag = $(this).val().trim().replace('/[\t\n]/g', ' ');
 		fileAnnotation[id]['issue'] = tag;
 
 		newTags = [];
@@ -152,6 +152,93 @@ function updateAutoCompletionTags() {
 	});
 }
 
+function updateComment() {
+	$('.doc-anno-comment').change(function() {
+		var id = $(this).attr('docid');
+		var comment = $(this).val().trim().replace('/[\t\n]/g', ' ');
+		fileAnnotation[id]['comment'] = comment;
+	});
+}
+
+function markIssue() {
+	$('.doc-body').on('mouseup', function() {
+		var id = $(this).attr('docid');
+		var select = getSelectedText();
+		var baseParent = select.baseNode.parentNode;
+		var extentParent = select.extentNode.parentNode;
+		var startOffset = select.baseOffset;
+		var endOffset = select.extentOffset;
+		if (baseParent === extentParent) {
+			if (startOffset != endOffset) {
+				$('span.doc-body-selected[docid="' + id + '"]').contents().unwrap();
+				$('span.doc-body-selected[docid="' + id + '"]').remove();
+
+				var range = select.getRangeAt(0);
+				if (range.toString().length > 0 && Math.abs(range.startOffset - range.endOffset) == range.toString().length) {
+					// add span
+					var newNode = document.createElement('span');
+	        		newNode.setAttribute('class', 'doc-body-selected');
+	        		newNode.setAttribute('docid', id);
+	        		range.surroundContents(newNode);
+	        		// remove '\n'
+        			$(this).html($(this).html().replace('/[\n]/g', ''));
+        			// calculate offsets
+        			var selectStartOffset;
+        			if ($('span.doc-body-selected[docid="' + id + '"]')[0].previousSibling == null) {
+        				selectStartOffset = 0;
+        			} else {
+        				selectStartOffset = $('span.doc-body-selected[docid="' + id + '"]')[0].previousSibling.nodeValue.length;
+        			}
+        			var selectEndOffset = selectStartOffset + $('span.doc-body-selected[docid="' + id + '"]')[0].textContent.length;
+        			// console.log(selectStartOffset, selectEndOffset);
+        			fileAnnotation[id]['mark'] = $('span.doc-body-selected[docid="' + id + '"]')[0].textContent;
+        			fileAnnotation[id]['markstart'] = selectStartOffset;
+        			fileAnnotation[id]['markend'] = selectEndOffset;
+	        	} else {
+	        		// clean annotation
+	        		fileAnnotation[id]['mark'] = '';
+	        		fileAnnotation[id]['markstart'] = -1;
+	        		fileAnnotation[id]['markend'] = -1;
+	        	}
+	        	document.getSelection().removeAllRanges();
+        	} else {
+        		$('span.doc-body-selected[docid="' + id + '"]').contents().unwrap();
+        		$('span.doc-body-selected[docid="' + id + '"]').remove();
+        		$(this).html($(this).html().replace('/[\n]/g', ''));
+        		// clean annotation
+	        	fileAnnotation[id]['mark'] = '';
+	        	fileAnnotation[id]['markstart'] = -1;
+	        	fileAnnotation[id]['markend'] = -1;
+        	}
+		}
+	});
+}
+
+function cleanIssue() {
+	$('.doc-body').on('click', function() {
+
+	})
+}
+
+// Grab selected text
+function getSelectedText(){
+	var select;
+    if(window.getSelection){ 
+    	console.log('window.getSelection');
+    	select = window.getSelection();
+    } 
+    else if(document.getSelection){ 
+    	console.log('document.getSelection');
+    	select = document.getSelection();
+    } 
+    else if(document.selection){
+    	console.log('document.selection');
+        select = document.selection.createRange();
+    }
+    // console.log(select);
+    return select;
+} 
+
 $(document).ready(function() {
 	file = $('#anno-field').attr('file');
 	annotator = $('#anno-field').attr('annotator');
@@ -162,6 +249,8 @@ $(document).ready(function() {
 	annotationButtonHandler();
 	sendAnnotation();
 	returnButtonHandler();
-	highlight();
+	// highlight();
 	updateAutoCompletionTags();
+	markIssue();
+	updateComment();
 });

@@ -9,25 +9,33 @@ block bodyextra
 	#anno-field(annotator='#{annotator}', file='#{file}', dataset='#{dataset}')
 		ul#doc-list
 			- each doc in docs
-				li.doc-item(id='#{doc.id}')
+				li.doc-item(docid='#{doc.id}')
 					.doc-meta #{doc.id} | #{doc.postedTime}
-					.doc-body= doc.body
+					.doc-body(docid='#{doc.id}')= doc.body
 					.doc-anno.noselect
 						.doc-anno-btns
-							span.doc-anno-btn.na(value='nm', id='#{doc.id}') non-moral
-							span.doc-anno-btn(value='care', id='#{doc.id}') care
-							span.doc-anno-btn(value='harm', id='#{doc.id}') harm
-							span.doc-anno-btn(value='fairness', id='#{doc.id}') fairness
-							span.doc-anno-btn(value='cheating', id='#{doc.id}') cheating
-							span.doc-anno-btn(value='loyalty', id='#{doc.id}') loyalty
-							span.doc-anno-btn(value='betrayal', id='#{doc.id}') betrayal
-							span.doc-anno-btn(value='authority', id='#{doc.id}') authority
-							span.doc-anno-btn(value='subversion', id='#{doc.id}') subversion
-							span.doc-anno-btn(value='purity', id='#{doc.id}') purity
-							span.doc-anno-btn(value='degradation', id='#{doc.id}') degradation
-						.doc-anno-issue-wrapper
+							span.doc-anno-btn.na(value='nm', docid='#{doc.id}') non-moral
+							span.doc-anno-btn(value='care', docid='#{doc.id}') care
+							span.doc-anno-btn(value='harm', docid='#{doc.id}') harm
+							span.doc-anno-btn(value='fairness', docid='#{doc.id}') fairness
+							span.doc-anno-btn(value='cheating', docid='#{doc.id}') cheating
+							span.doc-anno-btn(value='loyalty', docid='#{doc.id}') loyalty
+							span.doc-anno-btn(value='betrayal', docid='#{doc.id}') betrayal
+							span.doc-anno-btn(value='authority', docid='#{doc.id}') authority
+							span.doc-anno-btn(value='subversion', docid='#{doc.id}') subversion
+							span.doc-anno-btn(value='purity', docid='#{doc.id}') purity
+							span.doc-anno-btn(value='degradation', docid='#{doc.id}') degradation
+						hr
+						.doc-anno-extra-wrapper
+							button.doc-anno-skip-button skip
+							button.doc-anno-unclear-button unclear
 							lable.doc-anno-issue-label issue: 
-							input.doc-anno-issue(type='text' id='#{doc.id}')
+							input.doc-anno-issue(type='text' docid='#{doc.id}')
+							label.doc-anno-comment-label comment:
+							input.doc-anno-comment(type='text' docid='#{doc.id}')
+						//- .doc-anno-issue-wrapper
+						//- .doc-anno-comment-wrapper
+						//- .doc-anno-mark-wrapper
 			p#anno-end = End of this batch =
 		#anno-operation
 			#anno-info
