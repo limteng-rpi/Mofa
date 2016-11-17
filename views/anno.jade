@@ -27,8 +27,8 @@ block bodyextra
 							span.doc-anno-btn(value='degradation', docid='#{doc.id}') degradation
 						hr
 						.doc-anno-extra-wrapper
-							button.doc-anno-skip-button skip
-							button.doc-anno-unclear-button unclear
+							button.doc-anno-skip-button(marked='false' docid='#{doc.id}') skip
+							button.doc-anno-unclear-button(marked='false' docid='#{doc.id}') unclear
 							lable.doc-anno-issue-label issue: 
 							input.doc-anno-issue(type='text' docid='#{doc.id}')
 							label.doc-anno-comment-label comment:

@@ -9,7 +9,9 @@ module.exports = {
 	read_anno_directory: read_anno_directory,
 	load_issue_list: load_issue_list,
 	update_data_stats: update_data_stats,
-	load_data_stats: load_data_stats
+	load_data_stats: load_data_stats,
+	load_doc_list: load_doc_list,
+	write_doc_list: write_doc_list
 }
 
 
@@ -173,4 +175,19 @@ function load_data_stats(data_stats_file) {
 	console.log('Loading data set stats...');
 	var content = fs.readFileSync(data_stats_file, 'utf8').toString();
 	return JSON.parse(content);
+}
+
+// load doc list
+function load_doc_list(doc_list_file) {
+	console.log('Loading doc list from: ' + doc_list_file);
+	var content = {};
+	if (fs.existsSync(doc_list_file)) {
+		content = JSON.parse(fs.readFileSync(doc_list_file, 'utf8').toString());
+	}
+	return content;
+}
+
+// update doc list
+function write_doc_list(doc_list_file, doc_list) {
+	fs.writeFileSync(doc_list_file, JSON.stringify(doc_list));
 }
