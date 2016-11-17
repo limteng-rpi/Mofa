@@ -136,13 +136,17 @@ function start() {
 		console.log('[!] Re-run the program.');
 	} else if (update_stats) {
 		data_process.update_data_stats(complete_data_path, complete_data_stats_file);
-		data_process.update_data_stats(random_data_path, random_data_stats_file);
+		if (fs.existsSync(random_data_path)) {
+			data_process.update_data_stats(random_data_path, random_data_stats_file);
+		}
 		console.log('[!] Re-run the program.');
 	} else {
 		complete_data_stats = data_process.load_data_stats(complete_data_stats_file);
 		complete_anno_stats = data_process.read_anno_directory(complete_anno_path);
-		random_data_stats   = data_process.load_data_stats(random_data_stats_file);
-		random_anno_stats   = data_process.read_anno_directory(random_anno_path);
+		if (fs.existsSync(random_data_path) && fs.existsSync(random_data_stats_file)) {
+			random_data_stats   = data_process.load_data_stats(random_data_stats_file);
+			random_anno_stats   = data_process.read_anno_directory(random_anno_path);
+		}
 	}
 
 	// Update the data set stats
@@ -208,7 +212,11 @@ function offer_doc(file, annotator, dataset, callback) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('index');
+	var datasets = [{name: "Complete", value: "complete"}];
+	if (fs.existsSync(random_data_path) && fs.existsSync(random_data_stats_file)) {
+		datasets.push({name: "Random", value: "random"});
+	}
+	res.render('index', {datasets: datasets});
 });
 
 

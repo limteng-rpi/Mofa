@@ -11,7 +11,9 @@ block bodyextra
 				input#login-annotator(type='text' placeholder='Annotator name')
 				label.login-label Dataset
 				select#login-dataset
-					option(value='random') Random
-					option(value='complete') Complete
+					- each dataset in datasets
+						option(value='#{dataset.value}')= dataset.name
+					//- option(value='random') Random
+					//- option(value='complete') Complete
 				button#login-enter(disabled='disabled' type='button') Enter
 
