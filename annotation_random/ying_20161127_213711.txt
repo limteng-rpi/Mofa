@@ -1,0 +1,8 @@
+random_sample_set_3.json	tag:search.twitter.com,2005:596366884230037504	ying	nm				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596391866762932224	ying	betrayal				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596392868308094976	ying	cheating,betrayal				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596395625723404288	ying	loyalty				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596422269171343360	ying	loyalty				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596428775321014272	ying	cheating			racism	55	61
+random_sample_set_3.json	tag:search.twitter.com,2005:596472287437656064	ying	loyalty,fairness				-1	-1
+random_sample_set_3.json	tag:search.twitter.com,2005:596483988367118336	ying	fairness,authority				-1	-1

@@ -86,16 +86,16 @@ div.progress-bar-wrapper {
 	border: 1px solid #ddd;
 	border-radius: 3px;
 	width: 150px;
-	height: 12px;
+	height: 15px;
 	background-color: #f8f8f8;
 	overflow: hidden;
 	box-shadow: 0 0 5px rgba(255,255,255,1);
 }
 
 div.progress-bar {
-	height: 12px;
+	height: 15px;
 	width: 0;
-	background-color: #4078c0;
+	background-color: #868686;
 	transition: width .5s ease-in-out;
 }
 
@@ -103,10 +103,11 @@ div.progress-bar-text {
 	position: absolute;
 	top: 0;
 	left: 0;
-	height: 12px;
+	height: 15px;
 	width: 100%;
 	text-align: center;
 	font-size: 9px;
 	font-weight: 800;
-	line-height: 10px;
+	line-height: 13px;
+	color: #ccc;
 }
