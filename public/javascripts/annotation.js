@@ -7,6 +7,8 @@ var file;
 var dataset;
 var availableTags = [];
 var newTags = [];
+var skipDocument = [];
+var unclearDocument = [];
 
 // reset the current annotation field
 function resetAnnotationField() {
@@ -69,6 +71,7 @@ function annotationButtonHandler() {
 // send annotation results and new issues
 function sendAnnotation() {
 	$('button#next').click(function() {
+		// send new tags
 		$.ajax({
 			url: '/new_issue',
 			type: 'POST',
@@ -77,13 +80,31 @@ function sendAnnotation() {
 			dataType: 'json'
 		});
 
+		// send unclear
+		$.ajax({
+			url: '/unclear',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({annotator: annotator, file: file, dataset: dataset, docs: unclearDocument}),
+			dataType: 'json'
+		});
+
+		// send skip
+		$.ajax({
+			url: '/skip',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({annotator: annotator, file: file, dataset: dataset, docs: skipDocument}),
+			dataType: 'json'
+		});
+
 		validAnnotation = {};
 		$.each(fileAnnotation, function(k, v) {
-			if (!$.isEmptyObject(v.annotation)) {
+			if (!$.isEmptyObject(v.annotation) && $.inArray(k, skipDocument) < 0 && $.inArray(k, unclearDocument) < 0) {
 				validAnnotation[k] = v;
 			}
 		});
-		var submit = {annotator: annotator, annotation: validAnnotation, file: file};
+		var submit = {annotator: annotator, annotation: validAnnotation, file: file, dataset: dataset};
 		$.ajax({
 			url: '/submit',
 			type: 'POST',
@@ -214,12 +235,6 @@ function markIssue() {
 	});
 }
 
-function cleanIssue() {
-	$('.doc-body').on('click', function() {
-
-	})
-}
-
 // Grab selected text
 function getSelectedText(){
 	var select;
@@ -235,9 +250,49 @@ function getSelectedText(){
     	console.log('document.selection');
         select = document.selection.createRange();
     }
-    // console.log(select);
     return select;
 } 
+
+function skipButtonHandler() {
+	$('button.doc-anno-skip-button').click(function() {
+		var marked = $(this).attr('marked');
+		var docid = $(this).attr('docid');
+		if (marked == 'true') {
+			$(this).attr('marked', false);
+			var index = $.inArray(docid, skipDocument);
+			if (index >= 0) skipDocument.splice(index, 1);
+		} else {
+			$(this).attr('marked', true);
+			skipDocument.push(docid);
+			$('button.doc-anno-unclear-button[docid="' + docid + '"]').attr('marked', 'false');
+			var index = $.inArray(docid, unclearDocument);
+			if (index >= 0) unclearDocument.splice(index, 1);
+		}
+		console.log(skipDocument);
+		console.log(unclearDocument);
+	});
+}
+
+function unclearButtonHandler() {
+	$('button.doc-anno-unclear-button').click(function() {
+		var marked = $(this).attr('marked');
+		var docid = $(this).attr('docid');
+		if (marked == 'true') {
+			$(this).attr('marked', false);
+			var index = $.inArray(docid, unclearDocument);
+			if (index >= 0) unclearDocument.splice(index, 1);
+		} else {
+			$(this).attr('marked', true);
+			unclearDocument.push(docid);
+			$('button.doc-anno-skip-button[docid="' + docid + '"]').attr('marked', 'false');
+			var index = $.inArray(docid, skipDocument);
+			if (index >= 0) skipDocument.splice(index, 1);
+		}
+		console.log(skipDocument);
+		console.log(unclearDocument);
+	});
+}
+
 
 $(document).ready(function() {
 	file = $('#anno-field').attr('file');
@@ -253,4 +308,7 @@ $(document).ready(function() {
 	updateAutoCompletionTags();
 	markIssue();
 	updateComment();
+
+	skipButtonHandler();
+	unclearButtonHandler();
 });

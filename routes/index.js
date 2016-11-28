@@ -22,11 +22,22 @@ var data_stats_file = 'data_stats.json';
 var complete_data_stats_file = 'data_stats.json';
 var random_data_stats_file = 'data_stats_random.json';
 
+var complete_skip_doc_file = 'list/complete_skip_doc.json';
+var complete_unclear_doc_file = 'list/complete_unclear_doc.json';
+var random_skip_doc_file = 'list/random_skip_doc.json';
+var random_unclear_doc_file = 'list/random_unclear_doc.json';
+
+var complete_skip_doc = {};
+var random_skip_doc = {};
+var complete_unclear_doc = {};
+var random_unclear_doc = {};
+
 var issue_list_file = 'issue_list.txt';
 
 // var data_stats = [];
 // var anno_stats = {};
 var issue_list = [];
+
 
 
 var doc_per_page = 50;
@@ -143,9 +154,14 @@ function start() {
 	} else {
 		complete_data_stats = data_process.load_data_stats(complete_data_stats_file);
 		complete_anno_stats = data_process.read_anno_directory(complete_anno_path);
+		complete_skip_doc = data_process.load_doc_list(complete_skip_doc_file);
+		complete_unclear_doc = data_process.load_doc_list(complete_unclear_doc_file);
+
 		if (fs.existsSync(random_data_path) && fs.existsSync(random_data_stats_file)) {
 			random_data_stats   = data_process.load_data_stats(random_data_stats_file);
 			random_anno_stats   = data_process.read_anno_directory(random_anno_path);
+			random_skip_doc = data_process.load_doc_list(random_skip_doc_file);
+			random_unclear_doc = data_process.load_doc_list(random_unclear_doc_file);
 		}
 	}
 
@@ -190,6 +206,9 @@ start();
 function offer_doc(file, annotator, dataset, callback) {
 	var data_path = (dataset == 'complete')? complete_data_path : random_data_path;
 	var anno_stats = (dataset == 'complete')? complete_anno_stats : random_anno_stats;
+	var skip_doc = (dataset == 'complete')? complete_skip_doc : random_skip_doc;
+	var unclear_doc = (dataset == 'complete')? complete_unclear_doc : random_unclear_doc;
+
 	var reader = new readlines(data_path + file);
 	var line;
 	var count = 0;
@@ -200,10 +219,33 @@ function offer_doc(file, annotator, dataset, callback) {
 		if (lineStr.length == 0) continue;
 		var doc = JSON.parse(lineStr);
 		var id = doc['id'];
-		if (!exist_annotator || !anno_stats[annotator].hasOwnProperty(file)
-			|| !anno_stats[annotator][file].hasOwnProperty(id)) {
-			docs.push(doc);
+
+		// not skipped document
+		if (skip_doc.hasOwnProperty(annotator) 
+			&& skip_doc[annotator].hasOwnProperty(file)
+			&& skip_doc[annotator][file].indexOf(id) >= 0) {
+			continue;
 		}
+
+		// not unclear document
+		if (unclear_doc.hasOwnProperty(annotator)
+			&& unclear_doc[annotator].hasOwnProperty(file)
+			&& unclear_doc[annotator][file].indexOf(id) >= 0) {
+			continue;
+		}
+
+		// not annotated document
+		if (anno_stats.hasOwnProperty(annotator)
+			&& anno_stats[annotator].hasOwnProperty(file)
+			&& anno_stats[annotator][file].hasOwnProperty(id)) {
+			continue
+		}
+
+		// if (!exist_annotator
+			// || !anno_stats[annotator].hasOwnProperty(file)
+			// || !anno_stats[annotator][file].hasOwnProperty(id)) {
+		docs.push(doc);
+		// }
 
 		if (docs.length >= doc_per_page) break;
 	}
@@ -278,6 +320,7 @@ router.post('/submit', function(req, res, next) {
 	var dataset = req.body.dataset;
 	console.log('[' + datetime + ']Received annotations from annotator ' + annotator + ' of documents in file ' + file);
 	// write to file
+	if (annotation.length == 0) return;
 	var anno_path = (dataset == 'complete')? complete_anno_path : random_anno_path;
 	var writer = fs.createWriteStream(anno_path + annotator 
 		+ '_' + datetime + '.txt');
@@ -342,6 +385,8 @@ router.post('/submit', function(req, res, next) {
 		anno_list[file] = file_list;
 		anno_stats[annotator] = anno_list;
 	}
+	// console.log(complete_anno_stats);
+	// console.log(random_anno_stats);
 	res.send(JSON.stringify({error: false}));
 });
 
@@ -363,6 +408,83 @@ router.post('/new_issue', function(req, res, next) {
 			fs.appendFileSync(issue_list_file, new_issue_list[i] + '\n');
 		}
 	}
+});
+
+router.post('/skip', function(req, res, next) {
+	var skip_documents = req.body.docs;
+	var annotator = req.body.annotator;
+	var file = req.body.file;
+	var dataset = req.body.dataset;
+
+	var skip_doc = (dataset == 'complete')? complete_skip_doc : random_skip_doc;
+	var skip_doc_file = (dataset == 'complete')? complete_skip_doc_file : random_skip_doc_file;
+	if (skip_doc.hasOwnProperty(annotator)) {
+		if (skip_doc[annotator].hasOwnProperty(file)) {
+			var file_skip_doc = skip_doc[annotator][file];
+			for (var i = 0; i < skip_documents.length; i++) {
+				if (file_skip_doc.indexOf(skip_documents[i]) == -1) {
+					file_skip_doc.push(skip_documents[i]);
+				}
+			}
+		} else {
+			var file_skip_doc = [];
+			for (var i = 0; i < skip_documents.length; i++) {
+				if (file_skip_doc.indexOf(skip_documents[i]) == -1) {
+					file_skip_doc.push(skip_documents[i]);
+				}
+			}
+			skip_doc[annotator][file] = file_skip_doc;
+		}
+	} else {
+		var file_skip_doc = [];
+		for (var i = 0; i < skip_documents.length; i++) {
+			if (file_skip_doc.indexOf(skip_documents[i]) == -1) {
+				file_skip_doc.push(skip_documents[i]);
+			}
+		}
+		skip_doc[annotator] = {};
+		skip_doc[annotator][file] = file_skip_doc;
+	}
+	data_process.write_doc_list(skip_doc_file, skip_doc);
+});
+
+
+router.post('/unclear', function(req, res, next) {
+	var unclear_documents = req.body.docs;
+	var annotator = req.body.annotator;
+	var file = req.body.file;
+	var dataset = req.body.dataset;
+
+	var unclear_doc = (dataset == 'complete')? complete_unclear_doc : random_unclear_doc;
+	var unclear_doc_file = (dataset == 'complete')? complete_unclear_doc_file : random_unclear_doc_file;
+	if (unclear_doc.hasOwnProperty(annotator)) {
+		if (unclear_doc[annotator].hasOwnProperty(file)) {
+			var file_unclear_doc = unclear_doc[annotator][file];
+			for (var i = 0; i < unclear_documents.length; i++) {
+				if (file_unclear_doc.indexOf(unclear_documents[i]) == -1) {
+					file_unclear_doc.push(unclear_documents[i]);
+				}
+			}
+		} else {
+			var file_unclear_doc = [];
+			for (var i = 0; i < unclear_documents.length; i++) {
+				if (file_unclear_doc.indexOf(unclear_documents[i]) == -1) {
+					file_unclear_doc.push(unclear_documents[i]);
+				}
+			}
+			unclear_doc[annotator][file] = file_unclear_doc;
+		}
+	} else {
+		var file_unclear_doc = [];
+		for (var i = 0; i < unclear_documents.length; i++) {
+			if (file_unclear_doc.indexOf(unclear_documents[i]) == -1) {
+				file_unclear_doc.push(unclear_documents[i]);
+			}
+		}
+		unclear_doc[annotator] = {};
+		unclear_doc[annotator][file] = file_unclear_doc;
+	}
+	data_process.write_doc_list(unclear_doc_file, unclear_doc);
 });
 
 
