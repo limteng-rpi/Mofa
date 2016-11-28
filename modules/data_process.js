@@ -182,7 +182,10 @@ function load_doc_list(doc_list_file) {
 	console.log('Loading doc list from: ' + doc_list_file);
 	var content = {};
 	if (fs.existsSync(doc_list_file)) {
-		content = JSON.parse(fs.readFileSync(doc_list_file, 'utf8').toString());
+		var file_content = fs.readFileSync(doc_list_file, 'utf8').toString();
+		if (file_content != undefined && file_content.length > 0) {
+			content = JSON.parse(fs.readFileSync(doc_list_file, 'utf8').toString());
+		}
 	}
 	return content;
 }
