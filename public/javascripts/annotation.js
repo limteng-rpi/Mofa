@@ -157,7 +157,7 @@ function enableAutoCompletion() {
 function updateAutoCompletionTags() {
 	$('.doc-anno-issue').change(function() {
 		var id = $(this).attr('docid');
-		var tag = $(this).val().trim().replace('/[\t\n]/g', ' ');
+		var tag = $(this).val().trim().replace(/[\t\n]/g, ' ');
 		fileAnnotation[id]['issue'] = tag;
 
 		newTags = [];
@@ -176,7 +176,7 @@ function updateAutoCompletionTags() {
 function updateComment() {
 	$('.doc-anno-comment').change(function() {
 		var id = $(this).attr('docid');
-		var comment = $(this).val().trim().replace('/[\t\n]/g', ' ');
+		var comment = $(this).val().trim().replace(/[\t\n]/g, ' ');
 		fileAnnotation[id]['comment'] = comment;
 	});
 }
@@ -202,7 +202,7 @@ function markIssue() {
 	        		newNode.setAttribute('docid', id);
 	        		range.surroundContents(newNode);
 	        		// remove '\n'
-        			$(this).html($(this).html().replace('/[\n]/g', ''));
+        			$(this).html($(this).html().replace(/\n/g, ''));
         			// calculate offsets
         			var selectStartOffset;
         			if ($('span.doc-body-selected[docid="' + id + '"]')[0].previousSibling == null) {
@@ -212,7 +212,7 @@ function markIssue() {
         			}
         			var selectEndOffset = selectStartOffset + $('span.doc-body-selected[docid="' + id + '"]')[0].textContent.length;
         			// console.log(selectStartOffset, selectEndOffset);
-        			fileAnnotation[id]['mark'] = $('span.doc-body-selected[docid="' + id + '"]')[0].textContent;
+        			fileAnnotation[id]['mark'] = $('span.doc-body-selected[docid="' + id + '"]')[0].textContent.replace(/\n/g, ' ');
         			fileAnnotation[id]['markstart'] = selectStartOffset;
         			fileAnnotation[id]['markend'] = selectEndOffset;
 	        	} else {
@@ -225,7 +225,7 @@ function markIssue() {
         	} else {
         		$('span.doc-body-selected[docid="' + id + '"]').contents().unwrap();
         		$('span.doc-body-selected[docid="' + id + '"]').remove();
-        		$(this).html($(this).html().replace('/[\n]/g', ''));
+        		$(this).html($(this).html().replace(/\n/g, ''));
         		// clean annotation
 	        	fileAnnotation[id]['mark'] = '';
 	        	fileAnnotation[id]['markstart'] = -1;
@@ -268,8 +268,8 @@ function skipButtonHandler() {
 			var index = $.inArray(docid, unclearDocument);
 			if (index >= 0) unclearDocument.splice(index, 1);
 		}
-		console.log(skipDocument);
-		console.log(unclearDocument);
+		// console.log(skipDocument);
+		// console.log(unclearDocument);
 	});
 }
 
@@ -288,8 +288,8 @@ function unclearButtonHandler() {
 			var index = $.inArray(docid, skipDocument);
 			if (index >= 0) skipDocument.splice(index, 1);
 		}
-		console.log(skipDocument);
-		console.log(unclearDocument);
+		// console.log(skipDocument);
+		// console.log(unclearDocument);
 	});
 }
 

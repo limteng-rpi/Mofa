@@ -1,13 +1,13 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
-2 info using npm@3.10.8
-3 info using node@v6.9.1
+2 info using npm@3.10.10
+3 info using node@v6.9.5
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
 5 info lifecycle mofa@0.0.0~prestart: mofa@0.0.0
 6 silly lifecycle mofa@0.0.0~prestart: no script for prestart, continuing
 7 info lifecycle mofa@0.0.0~start: mofa@0.0.0
 8 verbose lifecycle mofa@0.0.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle mofa@0.0.0~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/limteng/Projects/Mofa/node_modules/.bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin
+9 verbose lifecycle mofa@0.0.0~start: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/limteng/Projects/Mofa/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin
 10 verbose lifecycle mofa@0.0.0~start: CWD: /Users/limteng/Projects/Mofa
 11 silly lifecycle mofa@0.0.0~start: Args: [ '-c', 'node ./bin/www' ]
 12 silly lifecycle mofa@0.0.0~start: Returned: code: 1  signal: null
@@ -24,10 +24,10 @@
 14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
 15 verbose pkgid mofa@0.0.0
 16 verbose cwd /Users/limteng/Projects/Mofa
-17 error Darwin 16.1.0
+17 error Darwin 16.4.0
 18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
-19 error node v6.9.1
-20 error npm  v3.10.8
+19 error node v6.9.5
+20 error npm  v3.10.10
 21 error code ELIFECYCLE
 22 error mofa@0.0.0 start: `node ./bin/www`
 22 error Exit status 1

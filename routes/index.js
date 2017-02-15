@@ -336,7 +336,7 @@ router.post('/submit', function(req, res, next) {
 			var line = file + '\t' + id + '\t' + annotator + '\t';
 			var anno = annotation[id]['annotation'];
 			var issue = annotation[id]['issue'];
-			var mark = annotation[id]['mark'];
+			var mark = annotation[id]['mark'].replace(/\n/g, ' ');
 			var markstart = annotation[id]['markstart'];
 			var markend = annotation[id]['markend'];
 			var comment = annotation[id]['comment'];
